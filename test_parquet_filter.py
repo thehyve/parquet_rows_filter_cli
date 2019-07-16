@@ -25,11 +25,17 @@ class ParquetFilterTestCase(unittest.TestCase):
         self.assertEqual(self.input_records, _get_records(output_parquet_file))
 
     def test_that_script_filters_on_a_field(self):
-        output_parquet_file = filter_parquet_rows(self.input_parquet_file, { 'field1': ['a'] })
+        output_parquet_file = filter_parquet_rows(self.input_parquet_file, None, { 'field1': ['a'] })
         records = _get_records(output_parquet_file)
         self.assertEqual(2, len(records))
         self.assertEqual({'a'}, { row['field1'] for row in records })
         self.assertEqual({1, 2}, { row['field2'] for row in records })
+
+    def test_that_script_gets_output_file(self):
+        output_parquet_file = os.path.join(tempfile.mkdtemp(), 'output.parquet')
+        output_parquet_file2 = filter_parquet_rows(self.input_parquet_file, output_parquet_file)
+        self.assertEqual(output_parquet_file, output_parquet_file2)
+        self.assertEqual(self.input_records, _get_records(output_parquet_file2))
 
 def _get_records(parquet_file):
     return pd.read_parquet(parquet_file).to_dict('records')
