@@ -21,9 +21,12 @@ class ParquetFilterTestCase(unittest.TestCase):
 
     def test_that_script_produces_file_equal_to_input(self):
         output_parquet_file = filter_parquet_rows(self.input_parquet_file)
-        odf = pd.read_parquet(output_parquet_file)
-        output_records = odf.to_dict('records')
-        self.assertEqual(self.input_records, output_records)
+
+        self.assertEqual(self.input_records, _get_records(output_parquet_file))
+
+
+def _get_records(parquet_file):
+    return pd.read_parquet(parquet_file).to_dict('records')
 
 
 if __name__ == '__main__':
