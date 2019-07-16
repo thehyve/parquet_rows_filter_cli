@@ -37,6 +37,19 @@ class ParquetFilterTestCase(unittest.TestCase):
         self.assertEqual(output_parquet_file, output_parquet_file2)
         self.assertEqual(self.input_records, _get_records(output_parquet_file2))
 
+    def test_that_script_filters_on_multiple_values(self):
+        output_parquet_file = filter_parquet_rows(self.input_parquet_file, None, { 'field1': ['a', 'b'] })
+
+        self.assertEqual(self.input_records, _get_records(output_parquet_file))
+
+    def test_that_script_filters_on_multiple_fields(self):
+        output_parquet_file = filter_parquet_rows(self.input_parquet_file, None, { 'field1': ['a'], 'field2': [1] })
+
+        records = _get_records(output_parquet_file)
+        self.assertEqual(1, len(records))
+        self.assertEqual({'a'}, { row['field1'] for row in records })
+        self.assertEqual({1}, { row['field2'] for row in records })
+
 def _get_records(parquet_file):
     return pd.read_parquet(parquet_file).to_dict('records')
 
