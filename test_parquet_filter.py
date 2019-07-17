@@ -4,7 +4,7 @@ import unittest
 import pandas as pd
 import os.path
 import tempfile
-from parquet_filter import filter_parquet_rows
+from parquet_filter import filter_parquet_rows, _collect_field_value_constraints
 
 class ParquetFilterTestCase(unittest.TestCase):
 
@@ -49,6 +49,13 @@ class ParquetFilterTestCase(unittest.TestCase):
         self.assertEqual(1, len(records))
         self.assertEqual({'a'}, { row['field1'] for row in records })
         self.assertEqual({1}, { row['field2'] for row in records })
+
+    def test_script_cli_collects_filters(self):
+        args, flt = _collect_field_value_constraints(['arg1', 'arg2', '--field1=a', '--field2=1', '--field2=2'])
+
+        self.assertEqual(['arg1', 'arg2'], args)
+        self.assertEqual({'field1': ['a'], 'field2': ['1', '2']} , flt)
+
 
 def _get_records(parquet_file):
     return pd.read_parquet(parquet_file).to_dict('records')
