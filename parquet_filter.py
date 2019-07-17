@@ -14,6 +14,7 @@ def filter_parquet_rows(input_parquet_file, output_parquet_file = None, flt = No
     else:
         filtered_file = output_parquet_file
     if len(df.index):
+        os.makedirs(os.path.dirname(filtered_file), exist_ok=True)
         df.to_parquet(filtered_file)
         return filtered_file
     else:
