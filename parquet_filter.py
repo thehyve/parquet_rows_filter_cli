@@ -13,8 +13,12 @@ def filter_parquet_rows(input_parquet_file, output_parquet_file = None, flt = No
         filtered_file = _get_default_filtered_file_path(input_parquet_file)
     else:
         filtered_file = output_parquet_file
-    df.to_parquet(filtered_file)
-    return filtered_file
+    if len(df.index):
+        df.to_parquet(filtered_file)
+        return filtered_file
+    else:
+        print('No rows of interest are found in ' + input_parquet_file, file=sys.stderr)
+        return None
 
 
 def _get_default_filtered_file_path(input_file):

@@ -56,6 +56,10 @@ class ParquetFilterTestCase(unittest.TestCase):
         self.assertEqual(['arg1', 'arg2'], args)
         self.assertEqual({'field1': ['a'], 'field2': ['1', '2']} , flt)
 
+    def test_that_script_does_not_produce_file_when_result_is_empty(self):
+        output_parquet_file = filter_parquet_rows(self.input_parquet_file, None, { 'field1': ['c'] })
+        self.assertTrue(output_parquet_file is None)
+
 
 def _get_records(parquet_file):
     return pd.read_parquet(parquet_file).to_dict('records')
